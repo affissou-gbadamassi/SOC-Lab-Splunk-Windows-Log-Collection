@@ -8,7 +8,7 @@ A Windows workstation sends events through the Splunk Universal Forwarder to an 
 
 | System | Role | IP address |
 |---|---|---|
-| SOC-LAB-DC01 | Active Directory domain controller for soclab.test | — |
+| SOC-LAB-DC01 | Active Directory domain controller and DNS for soclab.test | 192.168.100.10 |
 | SOC-LAB-PC01 | Windows workstation with Universal Forwarder | 192.168.100.20 |
 | SOC-LAB-SIEM02 | Ubuntu server with Splunk Enterprise | 192.168.100.30 |
 
@@ -114,10 +114,14 @@ I restored the stopped Splunk service using its dedicated account:
 sudo -u splunk /opt/splunk/bin/splunk start
 ```
 
-I then configured systemd to start Splunk automatically:
+After stopping Splunk, I configured systemd to start it automatically:
 
 ```bash
+sudo -u splunk /opt/splunk/bin/splunk stop
 sudo /opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk -group splunk
+sudo systemctl start Splunkd
+systemctl is-enabled Splunkd
+systemctl is-active Splunkd
 ```
 
 The service checks returned enabled and active. After rebooting Ubuntu, I confirmed that PC01 could access Splunk Web and searched recent endpoint events.
@@ -145,7 +149,7 @@ index=main host="SOC-LAB-PC01"
 | stats count by source
 ```
 
-The event counts are observations captured during testing.
+The event counts are observations captured during testing. The 15-minute search was run after the reboot; that search window alone does not establish that every returned event was generated after the reboot.
 
 ## What business value did I demonstrate?
 
@@ -199,12 +203,76 @@ I will generate failed-login activity, investigate related events, assign a prio
 
 This completed phase covers infrastructure setup, centralized log collection, troubleshooting, and recovery verification.
 
-## Screenshots
+## Project evidence
 
-Project evidence is stored in the screenshots folder.
+### Domain and endpoint configuration
 
-- Splunk Web access from PC01.
-- Receiver connectivity on TCP port 9997.
-- Security and System events indexed in Splunk.
-- Automatic startup verification.
-- Recent endpoint events checked after the SIEM reboot.
+#### Server network configuration
+
+The domain controller uses `192.168.100.10`, with DHCP disabled and DNS pointing to its own address. A consistent address helps clients locate domain services.
+
+![Domain controller static IP configuration](screenshots/02-server-static-ip-configuration.png)
+
+#### Domain controller verification
+
+PowerShell confirms the domain controller hostname, `soclab.test` domain, and IP address. This establishes the identity infrastructure used by the lab.
+
+![Domain controller verification](screenshots/03-domain-controller-verification.png)
+
+#### Windows workstation domain membership
+
+PC01 is joined to `soclab.test`, establishing the domain context for endpoint authentication.
+
+![Windows workstation domain membership](screenshots/04-windows-client-domain-joined.png)
+
+#### Domain user sign-in verification
+
+The hostname, signed-in user, and logon server identify the workstation, domain account, and authenticating server. These details help an investigator attribute activity to the correct system and account.
+
+![Domain user sign-in verification](screenshots/05-domain-user-sign-in-verified.png)
+
+### Local authentication event validation
+
+#### Failed-logon evidence on DC01
+
+Event Viewer on DC01 shows three failed-logon events with Event ID `4625`. Authentication-failure records provide evidence to examine during later investigation exercises. These events alone do not establish malicious activity.
+
+![Failed-logon events on DC01](screenshots/01-windows-failed-logon-event.png)
+
+#### Successful-logon evidence on PC01
+
+Event ID `4624` records a successful logon for the lab domain user on PC01. This provides an example of the account and computer context available in a Windows Security event.
+
+![Successful domain user logon on PC01](screenshots/06-client-successful-logon-event-4624.png)
+
+These two screenshots document local Windows event validation. The centralized ingestion demonstrated below covers PC01's Security and System logs; DC01 log forwarding was not demonstrated in this phase.
+
+### SIEM access and receiver connectivity
+
+#### Splunk Web access from PC01
+
+The workstation can access Splunk Web and sign in. This verifies the analyst's access path to the SIEM interface.
+
+![Splunk Web accessed from PC01](screenshots/07-Splunk-Web-Access-from-PC01.png)
+
+#### Receiver connectivity on TCP port 9997
+
+`TcpTestSucceeded: True` confirms PC01 can establish a TCP connection to `192.168.100.30:9997`. This validates network reachability; indexed events provide the separate check that collection works end to end.
+
+![Splunk receiver connectivity test](screenshots/08-Splunk-Receiver-9997-Reachable.png)
+
+### Centralized collection and recovery verification
+
+#### Windows logs indexed in Splunk
+
+The search returns **19,558 Security events** and **1,998 System events** for PC01, totaling **21,556 events**. This confirms that endpoint evidence reached the central searchable index.
+
+![PC01 Security and System logs indexed in Splunk](screenshots/09-PC01-Security-and-System-Logs-in-Splunk.png)
+
+#### Recent events checked after the SIEM reboot
+
+During the recovery check, a 15-minute search returns **77 Security events** and **1 System event**. Together with successful Web access after the reboot, this documents the availability checks performed following the SIEM restart.
+
+![Recent PC01 events checked after the SIEM reboot](screenshots/10-PC01-Log-Forwarding-After-Reboot.png)
+
+This phase establishes log collection and recovery verification. Alert development and SOC triage remain the next phase.

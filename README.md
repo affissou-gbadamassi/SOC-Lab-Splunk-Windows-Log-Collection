@@ -195,13 +195,13 @@ The lab uses one monitored Windows endpoint and HTTP access to Splunk Web. A bus
 - Backup, restoration, and availability requirements.
 - Privacy controls for collected event data.
 
-## What comes next?
+## Follow-on investigation: Lab 2
 
-The next phase will use these collected logs for a controlled SOC triage exercise.
+I used the collected PC01 Security logs to investigate two controlled failed logons. I confirmed EventCode 4625 in Splunk, reviewed the account context, and found zero matching successful-logon events in the searched data.
 
-I will generate failed-login activity, investigate related events, assign a priority, and write an incident ticket explaining the findings and recommended action.
+[Lab 2: investigation, searches, and screenshots](lab-02-failed-logon-triage/README.md) · [Short triage report](lab-02-failed-logon-triage/triage-report.md)
 
-This completed phase covers infrastructure setup, centralized log collection, troubleshooting, and recovery verification.
+The infrastructure evidence below documents the original collection phase. Lab 2 records its own findings and limits, including clock discrepancies and VM stability concerns.
 
 ## Project evidence
 
@@ -275,4 +275,4 @@ During the recovery check, a 15-minute search returns **77 Security events** and
 
 ![Recent PC01 events checked after the SIEM reboot](screenshots/10-PC01-Log-Forwarding-After-Reboot.png)
 
-This phase establishes log collection and recovery verification. Alert development and SOC triage remain the next phase.
+This phase establishes log collection and recovery verification. The linked Lab 2 documents the subsequent controlled SOC triage exercise; automated alert development has not been demonstrated.

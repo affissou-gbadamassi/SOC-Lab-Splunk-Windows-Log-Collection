@@ -124,7 +124,7 @@ See the [incident triage report](triage-report.md) for the evidence, assessment,
 
 ## Evidence screenshots
 
-Upload the seven original PNG files into `lab-03-failed-login-detection/screenshots/`. The images below will render automatically as soon as they are present in that directory.
+The seven screenshots document the workflow from Windows Security log collection through the triggered Splunk alert.
 
 ### 01 — Security logs collected from the domain controller
 

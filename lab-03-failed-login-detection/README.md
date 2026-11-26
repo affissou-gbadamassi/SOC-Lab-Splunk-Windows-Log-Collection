@@ -122,19 +122,37 @@ The test-account activity was authorized and intentional. The Administrator fail
 
 See the [incident triage report](triage-report.md) for the evidence, assessment, and limitations.
 
-## Evidence checklist
+## Evidence screenshots
 
-Keep only the screenshots that show meaningful results. After uploading the final captures into `lab-03-failed-login-detection/screenshots/`, use these filenames:
+Upload the seven original PNG files into `lab-03-failed-login-detection/screenshots/`. The images below will render automatically as soon as they are present in that directory.
 
-| Filename | What it demonstrates |
-|---|---|
-| `03-Splunk-PC01-Failed-Login-4625-Detected.png` | Fresh individual failed-login record indexed by Splunk |
-| `04-Splunk-Repeated-Failed-Login-Detection.png` | Historical threshold detection returning results |
-| `05-Splunk-Scheduled-Failed-Login-Alert.png` | Enabled saved scheduled alert |
-| `06-Splunk-Failed-Login-Alert-Triggered.png` | Trigger history showing a fired alert |
-| `07-Splunk-Triggered-Alert-Results.png` | Saved alert results showing account names and counts |
+### 01 — Security logs collected from the domain controller
 
-This README does not claim those screenshots are in the repository until they have been uploaded.
+![Security logs collected from SOC-LAB-DC01](screenshots/01-Splunk-Windows-Security-Logs-Success.png)
+
+### 02 — Historical Windows Event ID 4625 analysis
+
+![Historical failed-logon events in Splunk](screenshots/02-Splunk-Failed-Logon-Event-4625-Analysis.png)
+
+### 03 — Individual PC01 failed-login event detected
+
+![Fresh PC01 failed-login event detected in Splunk](screenshots/03-Splunk-PC01-Failed-Login-4625-Detected.png)
+
+### 04 — Multiple failed-logon detection search
+
+![Threshold search identifying repeated failed logons](screenshots/04-Splunk-Repeated-Failed-Login-Detection.png)
+
+### 05 — Scheduled SOC alert enabled
+
+![Saved and enabled scheduled Splunk SOC alert](screenshots/05-Splunk-Scheduled-Failed-Login-Alert.png)
+
+### 06 — Trigger history confirms the alert fired
+
+![Triggered alert with November 26 2026 UTC timestamp](screenshots/06-Splunk-Failed-Login-Alert-Triggered.png)
+
+### 07 — Triggered alert investigation results
+
+![Triggered alert results for Administrator and SOC-Test](screenshots/07-Splunk-Triggered-Alert-Results.png)
 
 ## What did I learn?
 

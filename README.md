@@ -203,6 +203,14 @@ I used the collected PC01 Security logs to investigate two controlled failed log
 
 The infrastructure evidence below documents the original collection phase. Lab 2 records its own findings and limits, including clock discrepancies and VM stability concerns.
 
+## Lab 3: Repeated failed-login detection and scheduled SOC alert
+
+I extended the SOC lab to detect three or more failed Windows logins within a five-minute window. Using controlled test attempts with the `SOC-Test@soclab.test` account, I confirmed live event ingestion, created a scheduled Splunk alert, and verified that it **triggered on November 26, 2026 at 16:50 UTC**. The fired results included three failures for the test account and three for Administrator; only the test-account activity is independently attributed to our simulation.
+
+[Read Lab 3: detection rules, troubleshooting and alert validation](lab-03-failed-login-detection/README.md) · [Lab 3 incident triage report](lab-03-failed-login-detection/triage-report.md)
+
+The active Splunk installation for Lab 3 runs on Ubuntu in VMware at `192.168.206.129`, with a forwarding relay at `192.168.56.1:9997`; earlier infrastructure screenshots describe the original VirtualBox SIEM address.
+
 ## Project evidence
 
 ### Domain and endpoint configuration
@@ -275,4 +283,4 @@ During the recovery check, a 15-minute search returns **77 Security events** and
 
 ![Recent PC01 events checked after the SIEM reboot](screenshots/10-PC01-Log-Forwarding-After-Reboot.png)
 
-This phase establishes log collection and recovery verification. The linked Lab 2 documents the subsequent controlled SOC triage exercise; automated alert development has not been demonstrated.
+This phase establishes log collection and recovery verification. The linked Lab 2 documents the subsequent controlled SOC triage exercise; automated alert development and successful triggering are demonstrated separately in [Lab 3](lab-03-failed-login-detection/README.md).
